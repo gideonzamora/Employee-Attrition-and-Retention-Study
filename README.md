@@ -1,4 +1,4 @@
-# Employee Dataset Mini Case Study
+# Employee-Attrition-and-Retention-Study
 
 ### Business Task
 - This analysis aims to identify the key drivers of employee attrition. By examining compensation, experience, and workforce distribution, we uncover patterns that can help improve retention strategies
