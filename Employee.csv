@@ -1,0 +1,161 @@
+# I keep the header names in lowercase with spaces as underscores. This is mainly for better readability and consistency with sql conventions.
+
+ALTER TABLE	employee_dataset
+CHANGE Education education TEXT;
+
+ALTER TABLE	employee_dataset
+CHANGE JoiningYear joining_year TEXT;
+
+ALTER TABLE	employee_dataset
+CHANGE City city TEXT;
+
+ALTER TABLE	employee_dataset
+CHANGE PaymentTier payment_tier INT;
+
+ALTER TABLE	employee_dataset
+CHANGE Age age INT;
+
+ALTER TABLE	employee_dataset
+CHANGE Gender gender TEXT;
+
+ALTER TABLE	employee_dataset
+CHANGE Everbenched ever_benched TEXT;
+
+ALTER TABLE	employee_dataset
+CHANGE ExperienceInCurrentDomain experience INT;
+
+ALTER TABLE	employee_dataset
+CHANGE City city TEXT;
+
+ALTER TABLE	employee_dataset
+CHANGE LeaveOrNot resigned TEXT;
+
+# What percentage of employees leave? 
+
+### 1. ATTRITION RATE BY PAYMENT TIER
+
+SELECT 
+	payment_tier,
+    COUNT(*) AS total_employees,
+    SUM(resigned) as resigned,
+    ROUND((SUM(resigned) / COUNT(*))*100, 2) AS attrition_rate
+FROM
+	employee_dataset
+GROUP BY
+	payment_tier
+ORDER BY
+	attrition_rate DESC
+;
+
+### 2. ATTRITION RATE BY CITY
+
+SELECT 
+	city,
+    COUNT(*) AS total_employees,
+    SUM(resigned) as resigned,
+    ROUND((SUM(resigned) / COUNT(*))*100, 2) AS attrition_rate
+FROM
+	employee_dataset
+GROUP BY
+	city
+ORDER BY
+	attrition_rate DESC
+;
+
+-- Which city has more experienced employees?
+
+SELECT 
+	CASE
+		WHEN experience <= 1 THEN '0-1'
+        WHEN experience BETWEEN 2 AND 4 THEN '2-4'
+        ELSE '5+'
+	END AS experience_range,
+    city,
+    COUNT(*) AS total_employees
+FROM
+	employee_dataset
+GROUP BY
+	experience_range,
+    city
+ORDER BY
+	experience_range
+;
+
+SELECT 
+    city,
+    COUNT(*) AS total_employees,
+    SUM(CASE WHEN experience >= 5 THEN 1 ELSE 0 END) AS experienced,
+    ROUND(SUM(CASE WHEN experience >= 5 THEN 1 ELSE 0 END)*100.0 / COUNT(*), 2) AS experienced_percentage
+FROM 
+	employee_dataset
+GROUP BY 
+	city
+ORDER BY 
+	experienced_percentage DESC
+;
+
+### 3. ATTRITION RATE BY EDUCATION
+
+SELECT 
+	education,
+    COUNT(*) AS total_employees,
+    SUM(resigned) as resigned,
+    ROUND((SUM(resigned) / COUNT(*))*100, 2) AS attrition_rate
+FROM
+	employee_dataset
+GROUP BY
+	education
+ORDER BY
+	attrition_rate DESC
+;
+
+### 4. ATTRITION RATE BY AGE
+
+SELECT
+	CASE
+		WHEN age < 25 THEN 'Under 25'
+        WHEN age BETWEEN 25 AND 29 THEN '25-29'
+        WHEN age BETWEEN 30 AND 34 THEN '30-34'
+        WHEN age BETWEEN 35 AND 39 THEN '35-39'
+        ELSE '40+'
+	END AS age_group,
+    COUNT(*) AS total,
+    ROUND(AVG(resigned)*100, 2) as attrition_rate
+FROM
+	employee_dataset
+GROUP BY
+	age_group
+;
+    
+### 5. ATTRITION RATE BY EXPERIENCE
+    
+SELECT
+	CASE
+		WHEN experience <= 1 THEN '0-1'
+        WHEN experience BETWEEN 2 AND 4 THEN '2-4'
+        ELSE '5+'
+	END AS experience_range,
+    COUNT(*) AS total,
+    ROUND(AVG(resigned)*100, 2) as attrition_rate
+FROM
+	employee_dataset
+GROUP BY
+	experience_range
+ORDER BY
+	attrition_rate DESC
+;
+    
+### 6. BENCH STATUS IMPACT
+    
+SELECT 
+    ever_benched,
+    COUNT(*) AS total_employees,
+    SUM(resigned) AS total_resigned,
+    ROUND(AVG(resigned)*100, 2) AS attrition_rate
+FROM 
+	employee_dataset
+GROUP BY
+	ever_benched
+ORDER BY
+	attrition_rate DESC
+;
